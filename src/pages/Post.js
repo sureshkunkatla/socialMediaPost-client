@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import { makeApiRequest } from "../api/apiJson";
 
 const Post = () => {
   let { id } = useParams();
@@ -8,17 +8,30 @@ const Post = () => {
   const [listOfComments, setListOfComments] = useState([]);
   const [comment, setComment] = useState("");
   useEffect(() => {
-    axios.get(`http://localhost:3001/posts/byId/${id}`).then((response) => {
-      setPostObject(response.data);
-    });
-
-    getAllCommentsForPost();
+    if (!Object.keys(postObject)?.length > 0) getCurrentPost();
+    if (!listOfComments?.length > 0) getAllCommentsForPost();
   }, []);
 
+  const getCurrentPost = async () => {
+    try {
+      const currentPostData = await makeApiRequest(`posts/byId/${id}`, "GET");
+      if (currentPostData?.id) {
+        setPostObject(currentPostData);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const getAllCommentsForPost = async () => {
-    await axios.get(`http://localhost:3001/comments/${id}`).then((response) => {
-      setListOfComments(response.data);
-    });
+    try {
+      const getAllcomments = await makeApiRequest(`comments/${id}`, "GET");
+      if (getAllcomments?.length > 0) {
+        setListOfComments(getAllcomments);
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const onClickCommentBtn = async () => {
@@ -26,22 +39,24 @@ const Post = () => {
       commentBody: comment,
       PostId: id,
     };
-    await axios
-      .post("http://localhost:3001/comments", data)
-      .then((response) => {
-        if (response) {
-          getAllCommentsForPost();
-          setComment("");
-        }
-      });
+
+    try {
+      const makeLoginReq = await makeApiRequest("comments", "POST", data);
+      if (makeLoginReq?.id) {
+        getAllCommentsForPost();
+        setComment("");
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
   return (
     <div className="postPage">
       <div className="leftSide">
         <div className="post" id="individual">
-          <div className="title"> {postObject.title} </div>
-          <div className="body">{postObject.postText}</div>
-          <div className="footer">{postObject.username}</div>
+          <div className="title"> {postObject?.title} </div>
+          <div className="body">{postObject?.postText}</div>
+          <div className="footer">{postObject?.username}</div>
         </div>
       </div>
       <div className="rightSide">

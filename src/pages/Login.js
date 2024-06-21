@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { makeApiRequest } from "../api/apiJson";
@@ -31,14 +30,6 @@ const Login = () => {
     } catch (e) {
       console.log(e);
     }
-
-    // axios.post("http://localhost:3001/auth/login", data).then((response) => {
-    //   if (response?.data?.code === 200) {
-    //     navigate("/");
-    //   } else {
-    //     setResonseMsg(response?.data?.error);
-    //   }
-    // });
   };
   return (
     <div className="createPostPage">

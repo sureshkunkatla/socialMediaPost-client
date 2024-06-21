@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { makeApiRequest } from "../api/apiJson";
 
 const Registration = () => {
   const navigate = useNavigate();
@@ -16,16 +16,18 @@ const Registration = () => {
     password: Yup.string().min(8).required(),
   });
 
-  const onSubmit = (data) => {
-    console.log("data", data);
-    axios.post("http://localhost:3001/auth", data).then((response) => {
-      if (response?.data?.code === 200) {
-        setResponseMsg(response?.data?.message);
+  const onSubmit = async (data) => {
+    try {
+      const register = await makeApiRequest("auth", "POST", data, true);
+      if (register?.code === 200) {
+        setResponseMsg(register?.message);
         navigate("/login");
       } else {
-        setResponseMsg(response?.data?.error);
+        setResponseMsg(register?.error);
       }
-    });
+    } catch (e) {
+      console.log(e);
+    }
   };
   return (
     <div className="createPostPage">

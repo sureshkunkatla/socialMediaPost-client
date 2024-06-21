@@ -1,7 +1,6 @@
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { makeApiRequest } from "../api/apiJson";
 
@@ -30,10 +29,6 @@ function CreatePost() {
     } catch (e) {
       console.log(e);
     }
-    // axios.post("http://localhost:3001/posts", data).then((response) => {
-    //   console.log("IT WORKED");
-    //   navigate("/");
-    // });
   };
   return (
     <div className="createPostPage">
