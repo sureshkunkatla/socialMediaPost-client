@@ -20,25 +20,27 @@ const Home = () => {
       console.log(e);
     }
   };
+
   return (
-    <div className="bodyContainer">
-      {posts?.map((each) => {
-        // <p key={each.id}>{each.title}</p>;
-        return (
-          <div
-            className="post"
-            key={each.id}
-            onClick={() => {
-              navigate(`/post/${each.id}`);
-            }}
-          >
-            <div className="title">{each.title}</div>
-            <div className="body">{each.postText}</div>
-            <div className="footer">{each.username}</div>
-          </div>
-        );
-      })}
-    </div>
+    <>
+      <div className="bodyContainer">
+        {posts?.map((each) => {
+          return (
+            <div
+              className="post"
+              key={each.id}
+              onClick={() => {
+                navigate(`/post/${each.id}`);
+              }}
+            >
+              <div className="title">{each.title}</div>
+              <div className="body">{each.postText}</div>
+              <div className="footer">{each.username}</div>
+            </div>
+          );
+        })}
+      </div>
+    </>
   );
 };
 

@@ -8,16 +8,16 @@ export const makeApiRequest = async (
   isLogin = false
 ) => {
   try {
-    const accessToken = sessionStorage.getItem("access_token");
+    const accessToken = localStorage.getItem("access_token");
     const URL = BASE_URL + endpoint;
 
-    if (!isLogin && !accessToken) {
-      // Handle the case when no access token is available (e.g., redirect to login)
-      console.error(
-        "Access token missing. Redirect to login or show an error message."
-      );
-      return null;
-    }
+    // if (!isLogin && !accessToken) {
+    //   // Handle the case when no access token is available (e.g., redirect to login)
+    //   console.error(
+    //     "Access token missing. Redirect to login or show an error message."
+    //   );
+    //   return null;
+    // }
 
     const requestOptions = {
       method,

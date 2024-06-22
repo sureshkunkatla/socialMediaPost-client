@@ -69,7 +69,11 @@ const Post = () => {
         </div>
         <div>
           {listOfComments?.map((each) => {
-            return <p key={each.id}>{each.commentBody}</p>;
+            return (
+              <p key={each.id}>
+                {each.commentBody}-{each.username}
+              </p>
+            );
           })}
         </div>
       </div>

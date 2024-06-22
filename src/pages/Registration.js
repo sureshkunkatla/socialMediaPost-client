@@ -29,6 +29,11 @@ const Registration = () => {
       console.log(e);
     }
   };
+
+  const onClickLogin = () => {
+    navigate("/login");
+  };
+
   return (
     <div className="createPostPage">
       <Formik
@@ -58,6 +63,7 @@ const Registration = () => {
           <button type="submit">Register</button>
         </Form>
       </Formik>
+      <button onClick={onClickLogin}>Login</button>
     </div>
   );
 };

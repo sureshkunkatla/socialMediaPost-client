@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { makeApiRequest } from "../api/apiJson";
+import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [responseMsg, setResonseMsg] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const onClickLogin = async () => {
     const data = {
@@ -22,7 +25,7 @@ const Login = () => {
         true
       );
       if (makeLoginReq?.code === 200) {
-        sessionStorage.setItem("access_token", makeLoginReq?.token);
+        login(makeLoginReq?.token);
         navigate("/");
       } else {
         setResonseMsg(makeLoginReq?.error);
@@ -31,6 +34,11 @@ const Login = () => {
       console.log(e);
     }
   };
+
+  const onClickRegister = () => {
+    navigate("/registration");
+  };
+
   return (
     <div className="createPostPage">
       <label>User Name</label>
@@ -46,6 +54,7 @@ const Login = () => {
       />
       <p>{responseMsg}</p>
       <button onClick={onClickLogin}>Login</button>
+      <button onClick={onClickRegister}>Register</button>
     </div>
   );
 };
