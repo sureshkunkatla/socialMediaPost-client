@@ -2,11 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { makeApiRequest } from "../api/apiJson";
 import { useNavigation } from "../context/NavigationContext";
+import PopupModal from "../components/Modal/PopupModal";
 
 const Profile = () => {
   const { id } = useParams();
   const [userData, setUserData] = useState();
   const [userRelatedPostsData, setUserRelatedPostsData] = useState();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [userBio, setUserBio] = useState("");
   const navigate = useNavigation();
   useEffect(() => {
     const profileRelatedData = async () => {
@@ -62,26 +65,49 @@ const Profile = () => {
     }
   };
 
+  const saveUserBio = async () => {
+    const data = {
+      userBio: userBio,
+    };
+    try {
+      const saveBio = await makeApiRequest(
+        `auth/userInfo/${id}/bio`,
+        "PUT",
+        data
+      );
+      if (saveBio?.message) {
+        setUserData({ ...userData, userBio: userBio });
+        setIsModalOpen(false);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const userBioJsx = () => {
+    return (
+      <div>
+        <textarea
+          value={userBio}
+          onChange={(e) => setUserBio(e.target.value)}
+        />
+        <button onClick={saveUserBio}>save</button>
+      </div>
+    );
+  };
+
   return (
     <div>
       <div className="profile-container">
         <p>{userData?.username}</p>
-        {userData?.userBio ? (
-          <p>{userData?.userBio}</p>
-        ) : (
-          <>
-            <p>Add your Bio here</p>
-            <button
-              onClick={() =>
-                console.log(
-                  "open popup and show input on click save add bio to database"
-                )
-              }
-            >
-              Edit
-            </button>
-          </>
-        )}
+        <p>{userData?.userBio ? userData?.userBio : "Add your Bio here"}</p>
+        <button
+          onClick={() => {
+            setIsModalOpen(true);
+          }}
+        >
+          Edit
+        </button>
       </div>
       <div className="related-posts-container">
         {userRelatedPostsData?.map((each) => {
@@ -118,6 +144,11 @@ const Profile = () => {
           );
         })}
       </div>
+      <PopupModal
+        isOpen={isModalOpen}
+        children={userBioJsx()}
+        closeModal={() => setIsModalOpen(false)}
+      />
     </div>
   );
 };
