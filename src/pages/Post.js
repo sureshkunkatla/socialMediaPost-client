@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { makeApiRequest } from "../api/apiJson";
+import { useAuth } from "../context/AuthContext";
 
 const Post = () => {
   let { id } = useParams();
   const [postObject, setPostObject] = useState({});
   const [listOfComments, setListOfComments] = useState([]);
   const [comment, setComment] = useState("");
+  const { userDetails } = useAuth();
+
   useEffect(() => {
     if (!Object.keys(postObject)?.length > 0) getCurrentPost();
     if (!listOfComments?.length > 0) getAllCommentsForPost();
@@ -50,6 +53,23 @@ const Post = () => {
       console.log(e);
     }
   };
+
+  const onClickDelete = async (data) => {
+    try {
+      const deleteComment = await makeApiRequest(
+        `comments/${data.id}`,
+        "DELETE"
+      );
+      if (deleteComment?.deleted) {
+        getAllCommentsForPost();
+      } else {
+        alert(deleteComment?.error);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <div className="postPage">
       <div className="leftSide">
@@ -70,9 +90,14 @@ const Post = () => {
         <div>
           {listOfComments?.map((each) => {
             return (
-              <p key={each.id}>
-                {each.commentBody}-{each.username}
-              </p>
+              <>
+                <p key={each.id}>
+                  {each.commentBody}-{each.username}
+                </p>
+                {userDetails.username === each.username && (
+                  <button onClick={() => onClickDelete(each)}>delete</button>
+                )}
+              </>
             );
           })}
         </div>

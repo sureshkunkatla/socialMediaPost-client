@@ -1,26 +1,28 @@
-import React from "react";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { makeApiRequest } from "../api/apiJson";
+import { useNavigation } from "../context/NavigationContext";
 
-const Home = () => {
-  const [posts, setPosts] = useState([]);
-  console.log(posts);
-  let navigate = useNavigate();
+const Profile = () => {
+  const { id } = useParams();
+  const [userData, setUserData] = useState();
+  const [userRelatedPostsData, setUserRelatedPostsData] = useState();
+  const navigate = useNavigation();
   useEffect(() => {
-    fetchAllPosts();
-  }, []);
+    const profileRelatedData = async () => {
+      try {
+        const getUserProfileData = await makeApiRequest(
+          `auth/userInfo/${id}`,
+          "GET"
+        );
+        const { user, userRelatedPosts } = getUserProfileData;
+        setUserData(user);
+        setUserRelatedPostsData(userRelatedPosts);
+      } catch (e) {}
+    };
 
-  const fetchAllPosts = async () => {
-    try {
-      const getAllPosts = await makeApiRequest("posts", "GET");
-      if (getAllPosts?.length > 0) {
-        setPosts(getAllPosts);
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
+    profileRelatedData();
+  }, []);
 
   const likeOrUnlikePost = async (postId) => {
     try {
@@ -29,7 +31,7 @@ const Home = () => {
       };
       const likeUnlikePost = await makeApiRequest("likes", "POST", data);
       if (likeUnlikePost?.liked) {
-        const updatePosts = posts.map((each) => {
+        const updatePosts = userRelatedPostsData.map((each) => {
           if (each.id === postId) {
             return {
               ...each,
@@ -39,9 +41,9 @@ const Home = () => {
             return each;
           }
         });
-        setPosts(updatePosts);
+        setUserRelatedPostsData(updatePosts);
       } else {
-        const updatePosts = posts.map((each) => {
+        const updatePosts = userRelatedPostsData.map((each) => {
           if (each.id === postId) {
             const updatedLikes = [...each.Likes];
             updatedLikes.pop();
@@ -53,7 +55,7 @@ const Home = () => {
             return each;
           }
         });
-        setPosts(updatePosts);
+        setUserRelatedPostsData(updatePosts);
       }
     } catch (e) {
       console.log(e);
@@ -61,9 +63,28 @@ const Home = () => {
   };
 
   return (
-    <>
-      <div className="bodyContainer">
-        {posts?.map((each) => {
+    <div>
+      <div className="profile-container">
+        <p>{userData?.username}</p>
+        {userData?.userBio ? (
+          <p>{userData?.userBio}</p>
+        ) : (
+          <>
+            <p>Add your Bio here</p>
+            <button
+              onClick={() =>
+                console.log(
+                  "open popup and show input on click save add bio to database"
+                )
+              }
+            >
+              Edit
+            </button>
+          </>
+        )}
+      </div>
+      <div className="related-posts-container">
+        {userRelatedPostsData?.map((each) => {
           return (
             <div
               className="post"
@@ -97,8 +118,8 @@ const Home = () => {
           );
         })}
       </div>
-    </>
+    </div>
   );
 };
 
-export default Home;
+export default Profile;

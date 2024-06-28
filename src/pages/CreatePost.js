@@ -3,24 +3,29 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { makeApiRequest } from "../api/apiJson";
+import { useAuth } from "../context/AuthContext";
 
 function CreatePost() {
   const navigate = useNavigate();
+  const { userDetails } = useAuth();
   const initialValues = {
     title: "",
     postText: "",
-    username: "",
   };
 
   const validationSchema = Yup.object().shape({
     title: Yup.string().required("You must input a Title!"),
     postText: Yup.string().required(),
-    username: Yup.string().min(3).max(15).required(),
   });
 
   const onSubmit = async (data) => {
     try {
-      const makeLoginReq = await makeApiRequest("posts", "POST", data);
+      const postData = {
+        ...data,
+        username: userDetails?.username,
+        UserId: userDetails?.userId,
+      };
+      const makeLoginReq = await makeApiRequest("posts", "POST", postData);
       if (makeLoginReq?.id) {
         navigate("/");
       } else {
@@ -54,15 +59,6 @@ function CreatePost() {
             name="postText"
             placeholder="(Ex. Post...)"
           />
-          <label>Username: </label>
-          <ErrorMessage name="username" component="span" />
-          <Field
-            autoComplete="off"
-            id="inputCreatePost"
-            name="username"
-            placeholder="(Ex. John123...)"
-          />
-
           <button type="submit"> Create Post</button>
         </Form>
       </Formik>
