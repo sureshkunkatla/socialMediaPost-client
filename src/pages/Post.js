@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { makeApiRequest } from "../api/apiJson";
 import { useAuth } from "../context/AuthContext";
+import PostCard from "../components/PostCard/PostCard";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPaperPlane, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 const Post = () => {
   let { id } = useParams();
@@ -70,36 +73,114 @@ const Post = () => {
     }
   };
 
+  const likeOrUnlikePost = async (postId) => {
+    try {
+      const data = {
+        PostId: postId,
+      };
+      const likeUnlikePost = await makeApiRequest("likes", "POST", data);
+      if (likeUnlikePost?.liked) {
+        const newObj = {
+          ...postObject,
+          likesCount: postObject.likesCount + 1,
+          userLiked: true,
+        };
+        setPostObject(newObj);
+      } else {
+        const newObj = {
+          ...postObject,
+          likesCount: postObject.likesCount - 1,
+          userLiked: false,
+        };
+        setPostObject(newObj);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <div className="postPage">
       <div className="leftSide">
-        <div className="post" id="individual">
-          <div className="title"> {postObject?.title} </div>
-          <div className="body">{postObject?.postText}</div>
-          <div className="footer">{postObject?.username}</div>
-        </div>
+        <PostCard cardDetails={postObject} likeOrUnlike={likeOrUnlikePost} />
       </div>
       <div className="rightSide">
-        <div>
-          <input
-            value={comment}
-            onChange={(event) => setComment(event.target.value)}
-          />
-          <button onClick={onClickCommentBtn}>Comment</button>
-        </div>
-        <div>
-          {listOfComments?.map((each) => {
-            return (
-              <>
-                <p key={each.id}>
-                  {each.commentBody}-{each.username}
-                </p>
-                {userDetails.username === each.username && (
-                  <button onClick={() => onClickDelete(each)}>delete</button>
-                )}
-              </>
-            );
-          })}
+        <div
+          style={{
+            height: "80%",
+            width: "80%",
+            boxShadow: "0px 0px 10px #ccc",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            padding: "20px",
+          }}
+        >
+          <div style={{ flex: "1", overflowY: "scroll" }}>
+            {listOfComments?.map((each) => {
+              return (
+                <div style={{ display: "flex", flexDirection: "row" }}>
+                  <p key={each.id} style={{ flex: "1" }}>
+                    <span style={{ fontSize: "14px", fontWeight: "700" }}>
+                      {each.username}
+                    </span>
+                    <span style={{ marginLeft: "7px" }}>
+                      {each.commentBody}
+                    </span>
+                  </p>
+                  {userDetails.username === each.username && (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <FontAwesomeIcon
+                        icon={faTrash}
+                        onClick={() => onClickDelete(each)}
+                      />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "flex-start",
+              alignItems: "center",
+            }}
+          >
+            <textarea
+              style={{
+                resize: "none",
+                width: "90%",
+                minHeight: "50px",
+                maxHeight: "100px",
+                flex: 1,
+                outline: "none",
+              }}
+              value={comment}
+              onChange={(event) => setComment(event.target.value)}
+            />
+            <div
+              style={{
+                width: "10%",
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "flex-end",
+              }}
+            >
+              <button className="button-primary" onClick={onClickCommentBtn}>
+                <FontAwesomeIcon icon={faPaperPlane} />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

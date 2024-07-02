@@ -2,6 +2,14 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { makeApiRequest } from "../api/apiJson";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faHeart, faUser } from "@fortawesome/free-solid-svg-icons";
+// import moment from "moment";
+// import {
+//   faComment,
+//   faHeart as faHeartRegular,
+// } from "@fortawesome/free-regular-svg-icons";
+import PostCard from "../components/PostCard/PostCard";
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
@@ -33,7 +41,8 @@ const Home = () => {
           if (each.id === postId) {
             return {
               ...each,
-              Likes: [...each.Likes, likeUnlikePost?.likedData],
+              likesCount: each.likesCount + 1,
+              userLiked: true,
             };
           } else {
             return each;
@@ -43,11 +52,10 @@ const Home = () => {
       } else {
         const updatePosts = posts.map((each) => {
           if (each.id === postId) {
-            const updatedLikes = [...each.Likes];
-            updatedLikes.pop();
             return {
               ...each,
-              Likes: updatedLikes,
+              likesCount: each.likesCount - 1,
+              userLiked: false,
             };
           } else {
             return each;
@@ -66,33 +74,12 @@ const Home = () => {
         {posts?.map((each) => {
           return (
             <div
-              className="post"
               key={each.id}
               onClick={() => {
                 navigate(`/post/${each.id}`);
               }}
             >
-              <div className="title">{each.title}</div>
-              <div className="body">{each.postText}</div>
-              <div className="footer">
-                <p
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(`/userInfo/${each.UserId}`);
-                  }}
-                >
-                  {each.username}
-                </p>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    likeOrUnlikePost(each.id);
-                  }}
-                >
-                  Like
-                  <label>{each?.Likes?.length}</label>
-                </button>
-              </div>
+              <PostCard cardDetails={each} likeOrUnlike={likeOrUnlikePost} />
             </div>
           );
         })}

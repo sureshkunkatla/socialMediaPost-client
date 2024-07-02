@@ -3,6 +3,9 @@ import { useParams } from "react-router-dom";
 import { makeApiRequest } from "../api/apiJson";
 import { useNavigation } from "../context/NavigationContext";
 import PopupModal from "../components/Modal/PopupModal";
+import PostCard from "../components/PostCard/PostCard";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 
 const Profile = () => {
   const { id } = useParams();
@@ -101,15 +104,35 @@ const Profile = () => {
       <div className="profile-container">
         <p>{userData?.username}</p>
         <p>{userData?.userBio ? userData?.userBio : "Add your Bio here"}</p>
-        <button
+        <FontAwesomeIcon
+          icon={faPenToSquare}
+          onClick={() => {
+            setIsModalOpen(true);
+          }}
+        />
+        {/* <button
           onClick={() => {
             setIsModalOpen(true);
           }}
         >
           Edit
-        </button>
+        </button> */}
       </div>
-      <div className="related-posts-container">
+      <div className="bodyContainer">
+        {userRelatedPostsData?.map((each) => {
+          return (
+            <div
+              key={each.id}
+              onClick={() => {
+                navigate(`/post/${each.id}`);
+              }}
+            >
+              <PostCard cardDetails={each} likeOrUnlike={likeOrUnlikePost} />
+            </div>
+          );
+        })}
+      </div>
+      {/* <div className="related-posts-container">
         {userRelatedPostsData?.map((each) => {
           return (
             <div
@@ -143,7 +166,7 @@ const Profile = () => {
             </div>
           );
         })}
-      </div>
+      </div> */}
       <PopupModal
         isOpen={isModalOpen}
         children={userBioJsx()}
