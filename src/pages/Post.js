@@ -102,41 +102,28 @@ const Post = () => {
   return (
     <div className="postPage">
       <div className="leftSide">
-        <PostCard cardDetails={postObject} likeOrUnlike={likeOrUnlikePost} />
+        <div className="left-side-card-container">
+          <PostCard
+            cardDetails={postObject}
+            likeOrUnlike={likeOrUnlikePost}
+            expandPost={true}
+          />
+        </div>
       </div>
       <div className="rightSide">
-        <div
-          style={{
-            height: "80%",
-            width: "80%",
-            boxShadow: "0px 0px 10px #ccc",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            padding: "20px",
-          }}
-        >
-          <div style={{ flex: "1", overflowY: "scroll" }}>
+        <div className="right-side-comments-container">
+          <div className="comments-container">
             {listOfComments?.map((each) => {
               return (
-                <div style={{ display: "flex", flexDirection: "row" }}>
+                <div className="each-comment-container">
                   <p key={each.id} style={{ flex: "1" }}>
-                    <span style={{ fontSize: "14px", fontWeight: "700" }}>
-                      {each.username}
-                    </span>
-                    <span style={{ marginLeft: "7px" }}>
+                    <span className="user-name-text">{each.username}</span>
+                    <span className="user-comment-text">
                       {each.commentBody}
                     </span>
                   </p>
                   {userDetails.username === each.username && (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
+                    <div className="trash-icon-container">
                       <FontAwesomeIcon
                         icon={faTrash}
                         onClick={() => onClickDelete(each)}
@@ -147,35 +134,13 @@ const Post = () => {
               );
             })}
           </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "flex-start",
-              alignItems: "center",
-            }}
-          >
+          <div className="comments-section-container">
             <textarea
-              style={{
-                resize: "none",
-                width: "90%",
-                minHeight: "50px",
-                maxHeight: "100px",
-                flex: 1,
-                outline: "none",
-              }}
+              className="comment-textarea"
               value={comment}
               onChange={(event) => setComment(event.target.value)}
             />
-            <div
-              style={{
-                width: "10%",
-                height: "100%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "flex-end",
-              }}
-            >
+            <div className="comment-button-container">
               <button className="button-primary" onClick={onClickCommentBtn}>
                 <FontAwesomeIcon icon={faPaperPlane} />
               </button>

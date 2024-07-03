@@ -5,7 +5,7 @@ import { useNavigation } from "../context/NavigationContext";
 import PopupModal from "../components/Modal/PopupModal";
 import PostCard from "../components/PostCard/PostCard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare, faUser } from "@fortawesome/free-solid-svg-icons";
 
 const Profile = () => {
   const { id } = useParams();
@@ -41,7 +41,8 @@ const Profile = () => {
           if (each.id === postId) {
             return {
               ...each,
-              Likes: [...each.Likes, likeUnlikePost?.likedData],
+              likesCount: each.likesCount + 1,
+              userLiked: true,
             };
           } else {
             return each;
@@ -51,11 +52,10 @@ const Profile = () => {
       } else {
         const updatePosts = userRelatedPostsData.map((each) => {
           if (each.id === postId) {
-            const updatedLikes = [...each.Likes];
-            updatedLikes.pop();
             return {
               ...each,
-              Likes: updatedLikes,
+              likesCount: each.likesCount - 1,
+              userLiked: false,
             };
           } else {
             return each;
@@ -93,84 +93,65 @@ const Profile = () => {
         <textarea
           value={userBio}
           onChange={(e) => setUserBio(e.target.value)}
+          className="textarea-field"
+          placeholder="Please enter text..."
         />
-        <button onClick={saveUserBio}>save</button>
+        <button className="button-primary" onClick={saveUserBio}>
+          Save
+        </button>
       </div>
     );
   };
 
   return (
-    <div>
+    <div className="profile-page">
       <div className="profile-container">
-        <p>{userData?.username}</p>
-        <p>{userData?.userBio ? userData?.userBio : "Add your Bio here"}</p>
-        <FontAwesomeIcon
-          icon={faPenToSquare}
-          onClick={() => {
-            setIsModalOpen(true);
-          }}
-        />
-        {/* <button
-          onClick={() => {
-            setIsModalOpen(true);
-          }}
-        >
-          Edit
-        </button> */}
-      </div>
-      <div className="bodyContainer">
-        {userRelatedPostsData?.map((each) => {
-          return (
-            <div
-              key={each.id}
+        <div className="user-icon" style={{ marginRight: "0px" }}>
+          <FontAwesomeIcon icon={faUser} style={{ fontSize: "20px" }} />
+        </div>
+        <span>{userData?.username}</span>
+        <span>
+          {userData?.userBio ? userData?.userBio : "Add your Bio here"}
+          <span>
+            <FontAwesomeIcon
+              icon={faPenToSquare}
               onClick={() => {
-                navigate(`/post/${each.id}`);
+                setIsModalOpen(true);
               }}
-            >
-              <PostCard cardDetails={each} likeOrUnlike={likeOrUnlikePost} />
-            </div>
-          );
-        })}
+            />
+          </span>
+        </span>
       </div>
-      {/* <div className="related-posts-container">
-        {userRelatedPostsData?.map((each) => {
-          return (
-            <div
-              className="post"
-              key={each.id}
-              onClick={() => {
-                navigate(`/post/${each.id}`);
-              }}
-            >
-              <div className="title">{each.title}</div>
-              <div className="body">{each.postText}</div>
-              <div className="footer">
-                <p
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(`/userInfo/${each.UserId}`);
+      <div className="user-card-container">
+        {!userRelatedPostsData?.length > 0 ? (
+          <div className="user-related-empty-container">
+            <span>No Posts Yet</span>
+          </div>
+        ) : (
+          <div className="user-related-cards-container">
+            {userRelatedPostsData?.map((each) => {
+              return (
+                <div
+                  key={each.id}
+                  onClick={() => {
+                    navigate(`/post/${each.id}`);
                   }}
                 >
-                  {each.username}
-                </p>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    likeOrUnlikePost(each.id);
-                  }}
-                >
-                  Like
-                  <label>{each?.Likes?.length}</label>
-                </button>
-              </div>
-            </div>
-          );
-        })}
-      </div> */}
+                  <PostCard
+                    cardDetails={each}
+                    likeOrUnlike={likeOrUnlikePost}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
       <PopupModal
         isOpen={isModalOpen}
         children={userBioJsx()}
         closeModal={() => setIsModalOpen(false)}
+        title={"User Bio"}
       />
     </div>
   );

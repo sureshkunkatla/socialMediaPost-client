@@ -94,7 +94,6 @@ const Login = () => {
           <button
             className="button-primary"
             onClick={onClickLogin}
-            // disabled={username.length > 0 || password.length > 0}
             disabled={!username.length > 0 || !password.length > 0}
             style={
               !username.length > 0 || !password.length > 0

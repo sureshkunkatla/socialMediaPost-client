@@ -18,10 +18,13 @@ import { Menu, MenuItem } from "@szhsin/react-menu";
 import "@szhsin/react-menu/dist/index.css";
 import "@szhsin/react-menu/dist/transitions/slide.css";
 import { useNavigation } from "./context/NavigationContext";
+import { useDispatch } from "react-redux";
+import { addPost } from "./redux/reducers/postsSlice";
 
 function App() {
   const { authentication, logout, userDetails } = useAuth();
   const navigate = useNavigation();
+  const dispatch = useDispatch();
 
   const onClickLogout = () => {
     logout();
@@ -85,6 +88,11 @@ function App() {
           <Route
             exact
             path="/createPost"
+            element={<ProtectedRoute element={CreatePost} />}
+          />
+          <Route
+            exact
+            path="/post/:id/update"
             element={<ProtectedRoute element={CreatePost} />}
           />
           <Route

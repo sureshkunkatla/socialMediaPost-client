@@ -1,5 +1,5 @@
 // apiJson.js
-const BASE_URL = "http://localhost:3001/";
+const BASE_URL = "http://192.168.1.7:3001/";
 
 export const makeApiRequest = async (
   endpoint,
