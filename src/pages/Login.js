@@ -3,13 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { makeApiRequest } from "../api/apiJson";
 import { useAuth } from "../context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import InfinitySpinner from "../components/InfinitySpinner/InfinitySpinner";
+import LoginSvg from "../assets/Login.svg";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [responseMsg, setResonseMsg] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -20,6 +23,7 @@ const Login = () => {
     };
 
     try {
+      setLoading(true);
       const makeLoginReq = await makeApiRequest(
         "auth/login",
         "POST",
@@ -34,6 +38,8 @@ const Login = () => {
       }
     } catch (e) {
       console.log(e);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -44,11 +50,7 @@ const Login = () => {
   return (
     <div className="login-bg-container">
       <div className="image-container">
-        <img
-          src={require("../assets/Login.jpg")}
-          alt="Logo"
-          className="login-img"
-        />
+        <img src={LoginSvg} alt="Logo" className="login-img" />
       </div>
       <div className="login-container">
         <div className="login-card-container">
@@ -63,9 +65,13 @@ const Login = () => {
             <label className="input-label">USERNAME</label>
             <input
               value={username}
-              onChange={(event) => setUsername(event.target.value)}
+              onChange={(event) => {
+                event.target.value = event.target.value.replace(/\s/g, "");
+                setUsername(event.target.value);
+              }}
               className="input-field"
               placeholder="Enter your username..."
+              maxLength={15}
             />
           </div>
           <div className="input-label-container">
@@ -74,9 +80,13 @@ const Login = () => {
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
-                onChange={(event) => setPassword(event.target.value)}
+                onChange={(event) => {
+                  event.target.value = event.target.value.replace(/\s/g, "");
+                  setPassword(event.target.value);
+                }}
                 className="input-field"
                 placeholder="Enter your password..."
+                maxLength={15}
               />
               <div
                 className="eye-icon-position"
@@ -108,6 +118,7 @@ const Login = () => {
           </button>
         </div>
       </div>
+      {loading && <InfinitySpinner visible={loading} />}
     </div>
   );
 };

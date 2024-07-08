@@ -444,6 +444,10 @@ body {
   overflow: hidden;
 }
 
+.profile-page {
+  height: 100%;
+}
+
 .post-body-text-expand {
   font-size: 14px;
   overflow: auto;
@@ -626,5 +630,5 @@ body {
 .user-card-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 80%;
 }

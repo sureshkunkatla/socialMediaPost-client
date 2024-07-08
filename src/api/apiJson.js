@@ -1,5 +1,4 @@
 // apiJson.js
-// const BASE_URL = "http://192.168.1.7:3001/";
 const BASE_URL = "https://socialmediapost-server.onrender.com/";
 
 export const makeApiRequest = async (
@@ -11,14 +10,6 @@ export const makeApiRequest = async (
   try {
     const accessToken = localStorage.getItem("access_token");
     const URL = BASE_URL + endpoint;
-
-    // if (!isLogin && !accessToken) {
-    //   // Handle the case when no access token is available (e.g., redirect to login)
-    //   console.error(
-    //     "Access token missing. Redirect to login or show an error message."
-    //   );
-    //   return null;
-    // }
 
     const requestOptions = {
       method,

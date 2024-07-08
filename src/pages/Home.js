@@ -26,6 +26,7 @@ const Home = () => {
 
   const fetchAllPosts = async () => {
     try {
+      setLoading(true);
       const getAllPosts = await makeApiRequest(`posts?page=${page}`, "GET");
       if (getAllPosts?.length > 0) {
         if (getAllPosts?.length < 12) {
@@ -41,6 +42,8 @@ const Home = () => {
       setLoading(false);
     } catch (e) {
       console.log(e);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -93,6 +96,7 @@ const Home = () => {
 
   const deleteCard = async (postId) => {
     try {
+      setLoading(true);
       const deleteCardDetails = await makeApiRequest(
         `posts/${postId}`,
         "DELETE"
@@ -104,6 +108,8 @@ const Home = () => {
       }
     } catch (e) {
       console.log(e);
+    } finally {
+      setLoading(false);
     }
   };
 

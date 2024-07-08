@@ -53,7 +53,7 @@ function CreatePost() {
       if (id) {
         const updatePost = await makeApiRequest(`posts/${id}`, "PUT", data);
         if (updatePost?.message) {
-          navigate("/");
+          navigate(-1);
         } else {
           alert(updatePost?.error);
         }
@@ -92,6 +92,7 @@ function CreatePost() {
                 name="title"
                 placeholder="(Ex. Title...)"
                 value={values.title}
+                maxLength={250}
               />
               <ErrorMessage
                 className="error-msg"
@@ -108,6 +109,7 @@ function CreatePost() {
                 name="postText"
                 placeholder="(Ex. Post...)"
                 value={values.postText}
+                maxLength={990}
               />
               <ErrorMessage
                 className="error-msg"

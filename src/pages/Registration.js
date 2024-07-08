@@ -3,10 +3,13 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { makeApiRequest } from "../api/apiJson";
+import InfinitySpinner from "../components/InfinitySpinner/InfinitySpinner";
+import Register from "../assets/Register.svg";
 
 const Registration = () => {
   const navigate = useNavigate();
   const [responseMsg, setResponseMsg] = useState("");
+  const [loading, setLoading] = useState(false);
   const initialValues = {
     username: "",
     password: "",
@@ -23,6 +26,7 @@ const Registration = () => {
 
   const onSubmit = async (data) => {
     try {
+      setLoading(true);
       const register = await makeApiRequest("auth", "POST", data, true);
       if (register?.code === 200) {
         setResponseMsg(register?.message);
@@ -32,6 +36,8 @@ const Registration = () => {
       }
     } catch (e) {
       console.log(e);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -42,11 +48,7 @@ const Registration = () => {
   return (
     <div className="login-bg-container">
       <div className="image-container">
-        <img
-          src={require("../assets/RegisterImg.png")}
-          alt="Logo"
-          className="login-img"
-        />
+        <img src={Register} alt="Logo" className="login-img" />
       </div>
       <div className="login-container">
         <Formik
@@ -54,7 +56,7 @@ const Registration = () => {
           onSubmit={onSubmit}
           validationSchema={validationSchema}
         >
-          {({ isValid, isSubmitting }) => (
+          {({ handleChange, values, isValid, isSubmitting }) => (
             <Form className="login-card-container">
               <div className="logo-img-container">
                 <img
@@ -70,6 +72,12 @@ const Registration = () => {
                   className="input-field"
                   name="username"
                   placeholder="(Ex. John123...)"
+                  maxLength="15"
+                  value={values.username}
+                  onChange={(e) => {
+                    e.target.value = e.target.value.replace(/\s/g, "");
+                    handleChange(e);
+                  }}
                 />
                 <ErrorMessage
                   className="error-msg"
@@ -84,7 +92,13 @@ const Registration = () => {
                   type="password"
                   className="input-field"
                   name="password"
+                  value={values.password}
                   placeholder="Enter your password"
+                  maxLength="15"
+                  onChange={(e) => {
+                    e.target.value = e.target.value.replace(/\s/g, "");
+                    handleChange(e);
+                  }}
                 />
                 <ErrorMessage
                   className="error-msg"
@@ -99,7 +113,13 @@ const Registration = () => {
                   type="password"
                   className="input-field"
                   name="confirmPassword"
+                  value={values.confirmPassword}
                   placeholder="Confirm your password"
+                  maxLength="15"
+                  onChange={(e) => {
+                    e.target.value = e.target.value.replace(/\s/g, "");
+                    handleChange(e);
+                  }}
                 />
                 <ErrorMessage
                   className="error-msg"
@@ -125,6 +145,7 @@ const Registration = () => {
           )}
         </Formik>
       </div>
+      {loading && <InfinitySpinner visible={loading} />}
     </div>
   );
 };

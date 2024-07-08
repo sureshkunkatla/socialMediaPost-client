@@ -6,17 +6,22 @@ import PopupModal from "../components/Modal/PopupModal";
 import PostCard from "../components/PostCard/PostCard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faUser } from "@fortawesome/free-solid-svg-icons";
+import InfinitySpinner from "../components/InfinitySpinner/InfinitySpinner";
+import { useAuth } from "../context/AuthContext";
 
 const Profile = () => {
   const { id } = useParams();
   const [userData, setUserData] = useState();
   const [userRelatedPostsData, setUserRelatedPostsData] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [userBio, setUserBio] = useState("");
   const navigate = useNavigation();
+  const { userDetails } = useAuth();
   useEffect(() => {
     const profileRelatedData = async () => {
       try {
+        setLoading(true);
         const getUserProfileData = await makeApiRequest(
           `auth/userInfo/${id}`,
           "GET"
@@ -24,7 +29,11 @@ const Profile = () => {
         const { user, userRelatedPosts } = getUserProfileData;
         setUserData(user);
         setUserRelatedPostsData(userRelatedPosts);
-      } catch (e) {}
+      } catch (e) {
+        console.log(e);
+      } finally {
+        setLoading(false);
+      }
     };
 
     profileRelatedData();
@@ -87,6 +96,27 @@ const Profile = () => {
     }
   };
 
+  const deleteCard = async (postId) => {
+    try {
+      setLoading(true);
+      const deleteCardDetails = await makeApiRequest(
+        `posts/${postId}`,
+        "DELETE"
+      );
+      if (deleteCardDetails.deleted) {
+        console.log(deleteCardDetails.message);
+        const filteredCards = userRelatedPostsData.filter(
+          (each) => each.id !== postId
+        );
+        setUserRelatedPostsData(filteredCards);
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const userBioJsx = () => {
     return (
       <div>
@@ -95,6 +125,7 @@ const Profile = () => {
           onChange={(e) => setUserBio(e.target.value)}
           className="textarea-field"
           placeholder="Please enter text..."
+          maxLength={500}
         />
         <button className="button-primary" onClick={saveUserBio}>
           Save
@@ -112,14 +143,16 @@ const Profile = () => {
         <span>{userData?.username}</span>
         <span>
           {userData?.userBio ? userData?.userBio : "Add your Bio here"}
-          <span>
-            <FontAwesomeIcon
-              icon={faPenToSquare}
-              onClick={() => {
-                setIsModalOpen(true);
-              }}
-            />
-          </span>
+          {userDetails.userId === Number(id) && (
+            <span>
+              <FontAwesomeIcon
+                icon={faPenToSquare}
+                onClick={() => {
+                  setIsModalOpen(true);
+                }}
+              />
+            </span>
+          )}
         </span>
       </div>
       <div className="user-card-container">
@@ -140,6 +173,7 @@ const Profile = () => {
                   <PostCard
                     cardDetails={each}
                     likeOrUnlike={likeOrUnlikePost}
+                    deletePost={deleteCard}
                   />
                 </div>
               );
@@ -153,6 +187,7 @@ const Profile = () => {
         closeModal={() => setIsModalOpen(false)}
         title={"User Bio"}
       />
+      {loading && <InfinitySpinner visible={loading} />}
     </div>
   );
 };
